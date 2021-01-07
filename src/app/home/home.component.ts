@@ -59,13 +59,8 @@ export class HomeComponent implements OnInit {
   }
 
   delete(): void {
-    this.playerService.deleteAllPlayers()
-      .subscribe(
-        player => {this.players = [];}, 
-        error => { 
-          console.log(error); 
-          this.error_message = error;});
-    this.gameService.deleteAllPlayers();
+    this.playerService.deleteAllPlayers().subscribe();
+    this.gameService.deleteAllPlayers().subscribe();
   }
 
   /**

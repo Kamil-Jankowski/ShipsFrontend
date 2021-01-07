@@ -4,11 +4,6 @@ import { catchError } from 'rxjs/operators';
 
 
 import { Observable, throwError } from 'rxjs';
-<<<<<<< HEAD
-  
-=======
-
->>>>>>> Added sending reset backend data and delete all players on game component destroy
 import { ShootMapCellStatus } from './shoot-map-cell-status';
 import { ShootResponse } from './shoot-response';
 import { ShipMapCellStatus } from './ship-map-cell-status';
@@ -51,29 +46,22 @@ export class GameService {
     return this.http.post<ShootResponse>(url, this.httpOptions)
       .pipe(catchError(this.handleError));
   }
-  
-  deleteAllPlayers(): void {
-    this.http.delete(this.gameUrl, this.httpOptions)
+
+  deleteAllPlayers(): Observable<void> {
+    return this.http.delete<void>(this.gameUrl, this.httpOptions)
       .pipe(catchError(this.handleError));
   }
 
-<<<<<<< HEAD
-  getCurrentGameStatus() : Observable<CurrentGameStatus>{
-    let url : string = `${this.gameUrl}/gamestatus`;
-    return this.http.get<CurrentGameStatus>(url, this.httpOptions) 
-    .pipe(catchError(this.handleError));
+  getCurrentGameStatus(): Observable<CurrentGameStatus> {
+    let url: string = `${this.gameUrl}/gamestatus`;
+    return this.http.get<CurrentGameStatus>(url, this.httpOptions)
+      .pipe(catchError(this.handleError));
   }
 
-
-  deleteAllPlayers() : void {
-    this.http.delete(this.gameUrl, this.httpOptions) 
-    .pipe(catchError(this.handleError));
-=======
-  resetBackendData(playerName: string): void {
+  resetBackendData(playerName: string): Observable<void> {
     let url: string = `${this.gameUrl}/${playerName}`
-    this.http.delete(url, this.httpOptions)
+    return this.http.delete<void>(url, this.httpOptions)
       .pipe(catchError(this.handleError));
->>>>>>> Added sending reset backend data and delete all players on game component destroy
   }
 
   private handleError(error: HttpErrorResponse) {

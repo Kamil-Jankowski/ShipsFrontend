@@ -49,9 +49,9 @@ export class PlayerService {
   }
 
   /** DELETE: delete all the players from the server */
-  deleteAllPlayers(): void{
+  deleteAllPlayers(): Observable<void> {
     const url = `${this.playersUrl}`;
-    this.http.delete(url, this.httpOptions)
+    return this.http.delete<void>(url, this.httpOptions)
       .pipe(catchError(this.handleError));
   }
 
