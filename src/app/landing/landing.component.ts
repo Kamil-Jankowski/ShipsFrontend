@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageService } from '../messages.service';
-import { ShootMapService } from '../shoot-map.service';
 import { NotificationMessage, NotificationType } from '../notification.message';
 import { NotificationService } from '../notification.service';
-import { Square } from '../square';
 
 /**
  * Represents landing page to be shown when no more players can be added to the game

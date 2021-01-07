@@ -41,7 +41,6 @@ export class WaitingRoomComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    console.log("Destroy!");
     this.subscription.unsubscribe();
   }
 

@@ -114,6 +114,11 @@ export class GameComponent implements OnInit {
     } );
   }
 
+  ngOnDestroy() {
+    this.gameService.resetBackendData(this.player.name);
+    this.playerService.deleteAllPlayers();
+  }
+
   private initializeEmptyMaps() : void{
     for (let i = 1; i <=100; i++) {
       this.shipMap.push({id : i, status : 0});
@@ -200,7 +205,6 @@ export class GameComponent implements OnInit {
         console.log("After: ", this.shootMap[id-1].status);
     });
   }
-
 
   showMessage(message: NotificationMessage) {
     this.notificationService.sendMessage(message);
