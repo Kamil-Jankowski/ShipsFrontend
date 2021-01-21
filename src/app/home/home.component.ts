@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 
 import { PlayerService } from '../player.service';
 import { TranslateService } from '@ngx-translate/core';
-import { StatusWithToken } from '../StatusWithToken';
+import { StatusWithToken } from '../status-with-token';
 
 /**
  * Represents welcome view of the app
@@ -15,7 +15,7 @@ import { StatusWithToken } from '../StatusWithToken';
 })
 export class HomeComponent implements OnInit {
 
-  error_message:string;
+  errorMessage:string;
 
   /**
    * Injecting player service for communication purpose
@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit {
    * Calls for getPlayers() method on component initialization
    */
   ngOnInit() {
-    this.error_message = ""; 
+    this.errorMessage = ""; 
   }
 
   /**
@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit {
       .subscribe(
         (response: StatusWithToken) => {
           localStorage.setItem('JSESSIONID', response.token);
-          this.error_message = '';
+          this.errorMessage = '';
           this.router.navigate(['/waiting-room/' + name])
         },
         error => { 
@@ -65,6 +65,6 @@ export class HomeComponent implements OnInit {
   private assignErrorMessage(error: string) {
     this.translate
         .get(error)
-        .subscribe((error: string) => this.error_message = error);
+        .subscribe((error: string) => this.errorMessage = error);
   }
 }

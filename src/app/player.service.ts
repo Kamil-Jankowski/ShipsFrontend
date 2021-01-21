@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 
 import { Player } from './player';
-import { StatusWithToken } from './StatusWithToken';
+import { StatusWithToken } from './status-with-token';
 
 /**
 * Service provides communication with backend for players requests.

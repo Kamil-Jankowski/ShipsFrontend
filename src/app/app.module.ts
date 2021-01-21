@@ -16,16 +16,15 @@ import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import { GameComponent } from './game/game.component';
 import { AppRoutingModule } from './app-routing.module';
 import { LandingComponent } from './landing/landing.component';
-import { CookieInterceptor } from './CookieInterceptor';
+import { CookieInterceptor } from './cookie-interceptor';
 
 export function httpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
-
-@NgModule({
   /**
    * Declaration list of components used within the application
    */
+@NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
@@ -35,12 +34,10 @@ export function httpLoaderFactory(http: HttpClient) {
   ],
   imports: [
     BrowserModule,
-    // Routing between components allows to address them directly
     AppRoutingModule,
     FormsModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    // Material package modules used for map display
     MatGridListModule,
     MatButtonModule,
     HttpClientModule,

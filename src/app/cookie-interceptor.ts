@@ -3,6 +3,9 @@ import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 
 
+/**
+ * Used  set correct cookie when requesting data from backend services.
+ */
 @Injectable()
 export class CookieInterceptor implements HttpInterceptor {
   constructor() {}
