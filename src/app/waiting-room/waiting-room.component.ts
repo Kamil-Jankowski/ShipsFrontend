@@ -8,7 +8,7 @@ import { Player } from '../player';
 import { TranslateService } from '@ngx-translate/core';
 
 /**
- * Represents waiting room view, on which we can see player name if only one have joined.
+ * Represents waiting room view, on which we can see players' names.
  */
 @Component({
   selector: 'app-waiting-room',
@@ -43,6 +43,9 @@ export class WaitingRoomComponent implements OnInit {
       .subscribe(playersInRoom => this.assignPlayersInRoom(playersInRoom));
   }
 
+  /**
+   * Removes subscription.
+   */
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }

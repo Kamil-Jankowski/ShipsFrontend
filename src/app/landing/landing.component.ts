@@ -5,7 +5,7 @@ import { NotificationType } from '../notification.message';
 import { ActivatedRoute } from '@angular/router';
 
 /**
- * Represents end page to be shown after the game is terminated or ended by one of the player.
+ * Represents the end page to be shown after the game termination or end caused by one of the player.
  */
 @Component({
   selector: 'app-landing',

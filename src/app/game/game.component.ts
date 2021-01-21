@@ -46,7 +46,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private enemyTurnMessage: string;
 
   /**
-   * Using injection route, and player and message services
+   * Basic constructor, used by injection route. 
    * @param messageService - messaging service used to provide messages on the website
    * @param playerService - player service used to get information about the player from the route
    * @param route - allows to verify player by id using the url which opened the game
@@ -64,6 +64,9 @@ export class GameComponent implements OnInit, OnDestroy {
     this.enemyTurnMessage = 'TOAST.ENEMY_TURN';
   }
 
+  /**
+   * Initializes the game component. Gets all necessary data to start the game round.
+   */
   ngOnInit(): void {
     this.player = { name: this.route.snapshot.paramMap.get('name') };
     this.gameService.createNewSetOfMapsForGivenPlayer(this.player.name).subscribe(() => {
@@ -79,46 +82,14 @@ export class GameComponent implements OnInit, OnDestroy {
       })
   }
 
-  fetchGameStatusConstantly() {
-    this.subscription = timer(0, 2000)
-      .pipe(switchMap(() => this.gameService.getCurrentGameStatus()))
-      .subscribe((currentGameStatus : CurrentGameStatus) => {
-        if (currentGameStatus.playerNameWhoMoves === this.player.name && !currentGameStatus.playerLoser) {
-          if (!this.isGameSetToPLayersTurn) {
-            this.showMessage(this.turnMessage, NotificationType.info);
-            this.getShipMap();
-            this.unlockAllShotSquares();
-            this.isGameSetToPLayersTurn = true;
-            this.isFirstTurn = false;
-          }
-        }
-        else if (currentGameStatus.playerNameWhoMoves === this.opponent.name && !currentGameStatus.playerLoser) {
-          this.blockAllShotSquares();
-          this.isGameSetToPLayersTurn = false;
-          if (this.isFirstTurn) {
-            this.showMessage(this.enemyTurnMessage, NotificationType.info);
-            this.isFirstTurn = false;
-          }
-        }
-        else if (currentGameStatus.playerNameWhoMoves === this.opponent.name && currentGameStatus.playerLoser) {
-          this.router.navigate(['/landing/win']);
-          this.removePlayersInGameAndRoomService();
-        }
-        else if (currentGameStatus.playerNameWhoMoves === this.player.name && currentGameStatus.playerLoser) {
-          this.router.navigate(['/landing/loose']);
-          this.removePlayersInGameAndRoomService();
-        }
-        if (currentGameStatus.playerNameWhoMoves != ""){
-          this.playerTurn = { name: currentGameStatus.playerNameWhoMoves };
-        }
-      });
-  }
-
+  /**
+   * Method called, when the app routes to another component. 
+   */
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
-  removePlayersInGameAndRoomService() {
+  private removePlayersInGameAndRoomService() {
     this.playerService.deletePlayer(this.player.name).subscribe();
     this.gameService.deleteAllPlayers().subscribe();
   }
@@ -162,6 +133,43 @@ export class GameComponent implements OnInit, OnDestroy {
         this.shootMap[id] = currentButton;
       });
   }
+
+
+  private fetchGameStatusConstantly() {
+    this.subscription = timer(0, 2000)
+      .pipe(switchMap(() => this.gameService.getCurrentGameStatus()))
+      .subscribe((currentGameStatus : CurrentGameStatus) => {
+        if (currentGameStatus.playerNameWhoMoves === this.player.name && !currentGameStatus.playerLoser) {
+          if (!this.isGameSetToPLayersTurn) {
+            this.showMessage(this.turnMessage, NotificationType.info);
+            this.getShipMap();
+            this.unlockAllShotSquares();
+            this.isGameSetToPLayersTurn = true;
+            this.isFirstTurn = false;
+          }
+        }
+        else if (currentGameStatus.playerNameWhoMoves === this.opponent.name && !currentGameStatus.playerLoser) {
+          this.blockAllShotSquares();
+          this.isGameSetToPLayersTurn = false;
+          if (this.isFirstTurn) {
+            this.showMessage(this.enemyTurnMessage, NotificationType.info);
+            this.isFirstTurn = false;
+          }
+        }
+        else if (currentGameStatus.playerNameWhoMoves === this.opponent.name && currentGameStatus.playerLoser) {
+          this.router.navigate(['/landing/win']);
+          this.removePlayersInGameAndRoomService();
+        }
+        else if (currentGameStatus.playerNameWhoMoves === this.player.name && currentGameStatus.playerLoser) {
+          this.router.navigate(['/landing/loose']);
+          this.removePlayersInGameAndRoomService();
+        }
+        if (currentGameStatus.playerNameWhoMoves != ""){
+          this.playerTurn = { name: currentGameStatus.playerNameWhoMoves };
+        }
+      });
+  }
+
 
   private initializeEmptyMaps(): void {
     for (let i = 0; i < GameComponent.NUMBER_OF_SQUARES; i++) {

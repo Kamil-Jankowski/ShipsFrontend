@@ -1,3 +1,7 @@
+/**
+ * Represents statuses of buttons in game-component
+ */
+
 export enum ButtonStatus {
   EMPTY = 4,
   HIT = 1,
