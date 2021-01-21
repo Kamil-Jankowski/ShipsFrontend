@@ -158,22 +158,12 @@ Example response:
 
 ===== POST
 
-Generates and sends ship map to GameService.
+Generates a ship map.
 
 [source]
 ----
-POST /randomplacement/{name} HTTP/1.1
+GET /randomplacement HTTP/1.1
 ----
-
-[header,cols="20%,80%"]
-|===
-^|Attribute
-
-^|Description
-
-^.^| name
-| Name of a player for whom a new ship map with randomly distributed boats will be generated.
-|===
 
 Example response:
 
@@ -183,7 +173,7 @@ Example response:
     Error message = null
           Headers = [Vary:"Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers", Content-Type:"application/json", Location:"http://localhost/maps/DUMMY_NAME_1-vs-DUMMY_NAME_2/10"]
      Content type = application/json
-             Body =
+             Body = [{"shipCellIndexes":[50,51,52,53],"vertical":false},{"shipCellIndexes":[7,8,9],"vertical":false},{"shipCellIndexes":[30,31,32],"vertical":false},{"shipCellIndexes":[89,99],"vertical":true},{"shipCellIndexes":[27,37],"vertical":true},{"shipCellIndexes":[24,25],"vertical":false},{"shipCellIndexes":[86],"vertical":false},{"shipCellIndexes":[39],"vertical":false},{"shipCellIndexes":[94],"vertical":false},{"shipCellIndexes":[57],"vertical":false}]
     Forwarded URL = null
    Redirected URL = http://localhost/maps/DUMMY_NAME_1-vs-DUMMY_NAME_2/10
           Cookies = []
@@ -202,10 +192,11 @@ Example response:
 ===== POST
 
 Creates a new instance in memory which stores player shoot and ship map.
+Generates map using RandomShipPlacementService.
 
 [source]
 ----
-POST /map HTTP/1.1
+POST /map/{name} HTTP/1.1
 ----
 
 [header,cols="20%,80%"]
@@ -214,11 +205,9 @@ POST /map HTTP/1.1
 
 ^|Description
 
-^.^| player
-| Player for whom map was generated
+^.^| name
+| Name of the player
 
-^.^| shipMap
-| Ship map of given player
 |===
 
 Example response:
