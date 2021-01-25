@@ -17,7 +17,7 @@ import { CurrentGameStatus } from './current-game-status';
   providedIn: 'root'
 })
 export class GameService {
-  private gameUrl = 'https://ships-game-service-backend.herokuapp.com/maps';
+  private gameUrl = 'http://localhost:9090/maps';
 
   /**
    * Using injection of http client
