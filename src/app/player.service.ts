@@ -25,8 +25,9 @@ export class PlayerService {
   constructor(private http: HttpClient) { }
   
   /** GET players from the server */
-  getPlayers(): Observable<Player[]> {
-    return this.http.get<Player[]>(this.playersUrl).pipe(catchError(this.handleError));
+  getPlayers(roomId: string): Observable<Player[]> {
+    let url: string = `${this.playersUrl}/${roomId}`;
+    return this.http.get<Player[]>(url).pipe(catchError(this.handleError));
   }
 
   /**
@@ -44,7 +45,6 @@ export class PlayerService {
    */
   deletePlayer(name: string): Observable<Player> {
     const url = `${this.playersUrl}/${name}`;
-
     return this.http.delete<Player>(url).pipe(catchError(this.handleError));
   }
 

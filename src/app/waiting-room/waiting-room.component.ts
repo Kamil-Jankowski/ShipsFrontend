@@ -6,6 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlayerService } from '../player.service';
 import { Player } from '../player';
 import { TranslateService } from '@ngx-translate/core';
+import { GameService } from '../game.service';
+import { HttpResponse } from '@angular/common/http';
 
 /**
  * Represents waiting room view, on which we can see players' names.
@@ -28,19 +30,29 @@ export class WaitingRoomComponent implements OnInit {
    */
   constructor(
     private playerService: PlayerService,
+    private gameService: GameService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     public translate: TranslateService) {
-      this.playersInRoom = [];
-      this.sessionPlayer = { name: this.activatedRoute.snapshot.paramMap.get('name') } as Player;
-    }
+    this.playersInRoom = [];
+    this.sessionPlayer = { name: this.activatedRoute.snapshot.paramMap.get('name') } as Player;
+  }
 
   /**
    * Calls for getPlayers() method on component initialization and assigns players to the room
    */
   ngOnInit() {
-    this.subscription = timer(0, 2000).pipe(switchMap(() => this.playerService.getPlayers()))
-      .subscribe(playersInRoom => this.assignPlayersInRoom(playersInRoom));
+    this.subscription = timer(0, 2000).pipe(switchMap(() => this.playerService.getPlayers(localStorage.getItem("roomId"))))
+      .subscribe(
+        playersInRoom => {
+          if (playersInRoom.length == 2) {
+            this.gameService.createNewSetOfMapsForGivenPlayer(this.sessionPlayer.name).subscribe(() => {
+              this.assignPlayersInRoom(playersInRoom);
+            });
+          } else {
+            this.assignPlayersInRoom(playersInRoom);
+          }
+        });
   }
 
   /**
@@ -52,7 +64,7 @@ export class WaitingRoomComponent implements OnInit {
 
   private assignPlayersInRoom(playersInRoom: Player[]) {
     this.playersInRoom = playersInRoom;
-    if(0 == playersInRoom.length) {
+    if (0 == playersInRoom.length) {
       this.router.navigate(['/home']);
     }
     if (this.MAX_NUMBER_OF_PLAYERS_IN_ROOM == playersInRoom.length) {
