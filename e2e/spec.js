@@ -8,7 +8,6 @@ describe('Ships the game', function() {
     var log4js = require("log4js");
     var logger = log4js.getLogger();
     logger.level = "debug";
-    logger.debug("Start");
     browser.get('https://ships-the-game.herokuapp.com/');
     var browser2 = browser.forkNewDriverInstance(true);
     browser.findElement(by.id('name')).sendKeys('DUMMY_PLAYER_1');
@@ -16,26 +15,25 @@ describe('Ships the game', function() {
     browser.findElement(by.id('buttonAddPlayer')).click();
     browser2.findElement(by.id('buttonAddPlayer')).click();
 
-    var elementToClick =$('#endGameButton');
-    var until = protractor.ExpectedConditions;
-    logger.debug("Before browser.wait");
-    browser.wait(protractor.ExpectedConditions.urlIs("https://ships-the-game.herokuapp.com/game/DUMMY_PLAYER_1"), 7000).then(function(){   
-     logger.debug("in then browser.wait");
+    browser.wait(protractor.ExpectedConditions.urlIs("https://ships-the-game.herokuapp.com/game/DUMMY_PLAYER_1"), 3000).then(function(){   
      browser.findElement(by.id('endGameButton')).click();
-     logger.debug("After endGame click"+  browser.findElement(by.id('endGameButton')));
-    }
-    ).catch(function(error){
-      logger.debug("In error browser.wait");
-    })
+    });
 
-    Promise.all([
-      expect(browser.getCurrentUrl()).toEqual('https://ships-the-game.herokuapp.com/landing/loose'),
-      expect(browser2.getCurrentUrl()).toEqual('https://ships-the-game.herokuapp.com/landing/win')])
-      .then(function() {
-        done();
-      }).catch(function() {
-        done.fail('somehow the Url is incorrect');
-       });
+    browser.sleep(8000).then(function(){
+      Promise.all([
+        expect(browser.getCurrentUrl()).toEqual('https://ships-the-game.herokuapp.com/landing/loose'),
+        expect(browser2.getCurrentUrl()).toEqual('https://ships-the-game.herokuapp.com/landing/win')])
+        .then(function() {
+          logger.debug("Promise fullfilled");
+          done();
+        }).catch(function() {
+          logger.debug("Promise error");
+          done.fail('somehow the Url is incorrect');
+         });
+    });
+
+    logger.debug("Before promise")
+
   });
 
   // it('should navigate third player to waiting room', function(done) {
