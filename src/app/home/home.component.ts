@@ -43,7 +43,8 @@ export class HomeComponent implements OnInit {
     this.playerService.addPlayer(name)
       .subscribe(
         (response: StatusWithToken) => {
-          localStorage.setItem('JSESSIONID', response.token);
+          localStorage.setItem('roomId', response.roomId);
+          localStorage.setItem('token', response.token);
           this.errorMessage = '';
           this.router.navigate(['/waiting-room/' + name])
         },

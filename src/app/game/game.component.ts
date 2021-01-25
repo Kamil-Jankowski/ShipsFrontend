@@ -69,7 +69,7 @@ export class GameComponent implements OnInit, OnDestroy {
    */
   ngOnInit(): void {
     this.player = { name: this.route.snapshot.paramMap.get('name') };
-    this.gameService.createNewSetOfMapsForGivenPlayer(this.player.name).subscribe(() => {
+    this.gameService.authenticate(this.player.name).subscribe(() => {
       this.getOpponent();
       this.initializeEmptyMaps();
       this.getShootMap();
@@ -90,8 +90,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   private removePlayersInGameAndRoomService() {
-    this.playerService.deletePlayer(this.player.name).subscribe();
-    this.gameService.deleteAllPlayers().subscribe();
+    this.gameService.deletePlayer().subscribe();
   }
 
   /**
@@ -100,7 +99,6 @@ export class GameComponent implements OnInit, OnDestroy {
    */
   endTheGameDuringPlaying() {
     this.gameService.resetBackendGameStatusAndIndicateLoser(this.player.name).subscribe();
-    this.playerService.deletePlayer(this.player.name).subscribe();
   }
 
   /**
@@ -111,18 +109,15 @@ export class GameComponent implements OnInit, OnDestroy {
     if (this.shootMap[id].status != ButtonStatus.EMPTY) {
       return;
     }
-    this.gameService.shootPlayer(this.player.name, this.opponent.name, id)
+    this.gameService.shootPlayer(this.player.name, id)
       .subscribe(shootResponse => {
-        let cellStatus: ShootMapCellStatus = shootResponse.shootMapCellStatus;
+        let cellStatus: ShootMapCellStatus = shootResponse;
         const currentButton = this.shootMap[id];
         if (cellStatus === ShootMapCellStatus.SHOOT_MAP_SHIP_HIT) {
           currentButton.status = ButtonStatus.HIT;
           this.showMessage(this.turnMessage, NotificationType.info);
           this.showMessage(this.hitMessage, NotificationType.success);
           this.playerTurn = this.player;
-          if (shootResponse.winner) {
-            this.router.navigate(['/landing/win']);
-          }
         } else if (cellStatus === ShootMapCellStatus.SHOOT_MAP_MISS) {
           currentButton.status = ButtonStatus.MISS;
           this.showMessage(this.enemyTurnMessage, NotificationType.info);
@@ -158,11 +153,11 @@ export class GameComponent implements OnInit, OnDestroy {
         }
         else if (currentGameStatus.playerNameWhoMoves === this.opponent.name && currentGameStatus.playerLoser) {
           this.router.navigate(['/landing/win']);
-          this.removePlayersInGameAndRoomService();
+          //this.removePlayersInGameAndRoomService();
         }
         else if (currentGameStatus.playerNameWhoMoves === this.player.name && currentGameStatus.playerLoser) {
           this.router.navigate(['/landing/loose']);
-          this.removePlayersInGameAndRoomService();
+          //this.removePlayersInGameAndRoomService();
         }
         if (currentGameStatus.playerNameWhoMoves != ""){
           this.playerTurn = { name: currentGameStatus.playerNameWhoMoves };
