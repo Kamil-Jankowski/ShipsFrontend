@@ -7,7 +7,6 @@ import { PlayerService } from '../player.service';
 import { Player } from '../player';
 import { TranslateService } from '@ngx-translate/core';
 import { GameService } from '../game.service';
-import { HttpResponse } from '@angular/common/http';
 
 /**
  * Represents waiting room view, on which we can see players' names.
@@ -22,6 +21,7 @@ export class WaitingRoomComponent implements OnInit {
   private MAX_NUMBER_OF_PLAYERS_IN_ROOM: number = 2;
   private subscription: Subscription;
   private sessionPlayer: Player;
+  private wasCreateNewSetOfMapsForGivenPlayerCalled: boolean;
   playersInRoom: Player[];
 
   /**
@@ -36,6 +36,7 @@ export class WaitingRoomComponent implements OnInit {
     public translate: TranslateService) {
     this.playersInRoom = [];
     this.sessionPlayer = { name: this.activatedRoute.snapshot.paramMap.get('name') } as Player;
+    this.wasCreateNewSetOfMapsForGivenPlayerCalled = false;
   }
 
   /**
@@ -43,16 +44,9 @@ export class WaitingRoomComponent implements OnInit {
    */
   ngOnInit() {
     this.subscription = timer(0, 2000).pipe(switchMap(() => this.playerService.getPlayers(localStorage.getItem("roomId"))))
-      .subscribe(
-        playersInRoom => {
-          if (playersInRoom.length == 2) {
-            this.gameService.createNewSetOfMapsForGivenPlayer(this.sessionPlayer.name).subscribe(() => {
-              this.assignPlayersInRoom(playersInRoom);
-            });
-          } else {
-            this.assignPlayersInRoom(playersInRoom);
-          }
-        });
+      .subscribe(playersInRoom => {
+        this.assignPlayersInRoom(playersInRoom);
+      });
   }
 
   /**
@@ -67,9 +61,12 @@ export class WaitingRoomComponent implements OnInit {
     if (0 == playersInRoom.length) {
       this.router.navigate(['/home']);
     }
-    if (this.MAX_NUMBER_OF_PLAYERS_IN_ROOM == playersInRoom.length) {
+    if (this.MAX_NUMBER_OF_PLAYERS_IN_ROOM == playersInRoom.length && !this.wasCreateNewSetOfMapsForGivenPlayerCalled) {
+      this.wasCreateNewSetOfMapsForGivenPlayerCalled = true;
       localStorage.setItem('players', JSON.stringify(playersInRoom));
-      this.router.navigate(['/game/' + this.sessionPlayer.name]);
+      this.gameService.createNewSetOfMapsForGivenPlayer(this.sessionPlayer.name).subscribe(() => {
+        this.router.navigate(['/game/' + this.sessionPlayer.name]);
+      });
     }
   }
 }
