@@ -1,0 +1,91 @@
+= Analiza projektu battleship
+:authors: Kamil Jankowski, Michał Jędrzejkiewicz, Hubert Milczarek
+
+== Funkcjonalność
+=== Uruchominie aplikacji
+
+* Żeby uruchomić aplikacje potrzebujemy pobrać repozytorium projektu i zainstalować ją.
+Następnie możemy uruchomić grę w przeglądarce.
+* Główny serwer bakcendu znajduje się na _Heroku_.
+Po uruchomieniu jesteśmy w stanie się z nim połączyć.
+
+=== Logowanie i rejestracja
+
+* Sa udostępnione widoki logowania i rejestracji.
+Do zarejestrowania wymagany jest adres e-mail i nazwa użytkownika.
+Nie ma możliwości zarejestrowania dwóch użytkowników o tym samym nicku lub adresie e-mail.
+Nie ma też możliwości trwałego usunięcia gracza.
+* Do gry jest w stanie zalogować się dowolna liczba użytkowników.
+* Nie jesteśmy automatycznie wlogowywani z gry po zamknięciu przeglądarki.
+
+=== Widok _home_
+
+* Po zalogowaniu przenoszeni jesteśmy do ekranu "home".
+Obok nasdzych danych wyświetlane są globalne statystyki gry.
+Oprócz tego można zobaczyć wszystkich aktywnych użytkowników.
+Po kliknięciu przycisku _Wait for opponent_ jesteśmy oznaczani jako gotowi do gry.
+Jeżeli którykolwiek z pozostałych graczy _join_ jesteśmy, rozpoczynamy nową grę i przenoszeni jesteśmy do ekranu ustawiania statków.
+* W poczekalni nie ma automatycznego aktualizowania listy czekajacych graczy.
+Do tego trzeba używać przycisku _refresh_.
+Nie ma też możliwości wysyłania zaproszenia do konkretnego gracza.
+
+=== Widok ustawiania statków
+
+* W widoku ustawiana statków, możemy wybrać opcję losowego ustawienia.
+* W momencie gdy ustawimy statki, musimy poczkeać na drugiego gracza.
+* Na ustawienie statkóœ mamy 25 sekund.
+Jeśli się nie wyrobimy, zostanie przeniesieni do widoku home.
+* W momencie gdy oboje gracze mają ustawione statki, jesteśmy przenoszeni do ekranu pla
+
+=== Widok _game_
+
+* Widok _game_ wygląda jak klasyczna plansza do gry w statki.
+Po lewej stronie, wyświetlane są nasze statki, po prawej nasze strzały do statków przeciwnika.
+* Mamy 25 sekund na strzał.
+Jeśli ten czas minie, po oddaniu strzału jesteśmy informowani, że przegraliśmy.
+Przeciwnik jest informowany od razu, o tym że wygrał z powodu spóźnienia drugiego gracza.
+* W momencie gdy zestrzelimy cały statek, pola wokół tego statku są wyłączone z dalszej gry.
+* Jeśli zamkniemy okno przeglądarki ale wrócimy w ciągu 25 sekund od początku naszej kolejki, jesteśmy w stanie kontunuować grę.
+* W momencie/zwycięstwea przegranej wyświetla się przycisk przejścia do widoku _home_.
+* Po skończonej grze, aktualizowane są statystyki.
+
+== Ogólny opis projektu
+
+=== Używane technologie
+
+* Projekt jest budowany przy użyciu _Mavena_.
+Do budowania użyto także _Dockera_.
+* Projekt zbudowany został w opraciu o framework _Spark_.
+* Do obsługi ządań w formacie JSON (serializacji i deserializacji) używany jest pakiet _GSON_.
+* Do wstrzykiwania zalezności użyto framework _guice_.
+* Korzystano także ze _Swaggera_ do dokumentacji REST API.
+* Testy jednostkowe napisane zostały przy użyciu _TestNG_ oraz _Mockito_.
+* Frontend został zbudowany w oparciu o technologię _Thymeleaf_.
+
+=== Backend
+
+* Dla backendu wszelkie punkty końcowe zdefiniowane zostały w `BackendServiceEndpoints`.
+* Poszczególne komponenty backendu zgrupowane są w odpowiednich klasach:
+`GameService`, `PlayerService`, `UserSerivce`, `TokeSeervice`.
+Dla każdej klasy jest utworzona odpowiadająca klasa `Controller` zawierająca odpowiednie metody do obsługi żądań REST.
+* Kod miejscami nie jest kalisteniczny.
+Klasa `Game` zawiera 17 pól.
+Poza tym wiele klas i metod jest publicznych mimo iż nie soą używane poza pakietem.
+* W całym backendzie nie ma dokumentacji _javadoc_ dla publicznych elementów API.
+Utrudnia to rozeznawanie się w kodzie.
+* Całość jest dość dobrze podzielona na poszczególne Kontrolery.
+Nie ma niepotrzebnych zależności pomiedz← klasami poszczególnych komponentów.
+* Jeżeli serwis korzysta z API innego serwisu, robi to poprzez klasę `Service`.
+Klasy `Controller` wykorzystywane są tylko do komunikacji z frontendem.
+* Poszczególne komponenty mogą być łątwo podzielone na mikroserwisy.
+
+=== Frontend
+
+=== Testy jednostkowe
+
+* Pokrycie testami jest na poziomie 31%.
+Przez to wiele ważnych funkcjonalności projektu nie jest przetestowana.
+* W pakiecie `com.epam.javaacademy.battleship.backend.game` testy jednostkowe zostały napisane dla funkcjonalności Planszy i Współrzędnych.
+Brak natomiast dokładnych testów dla losowego rozmieszczania statków.
+* Pakiet `com.epam.javaacademy.battleship.backend.user` jest najbardziej pokrytym testami jednostkowymi pakietem w projekcie (ponad 60%).
+* We frontendzie testy jednostkowe napisane są w nie.
