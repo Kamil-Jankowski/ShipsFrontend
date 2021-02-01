@@ -10,6 +10,7 @@ Cel analizy: Określenie możliwości rozwoju aplikacji pod kątem obsługi pona
 == 1. Analiza projektu _battleship_
 
 Repozytorium projektu: https://git.epam.com/pawel_czarny/battleship
+
 Backend na _Heroku_: https://ja-battleship.herokuapp.com/
 
 === 1.1. Funkcjonalność
