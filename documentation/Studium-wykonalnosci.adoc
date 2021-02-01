@@ -1,0 +1,275 @@
+:icons: font
+:toc: preamble
+:imagesdir: images
+:authors: Michał Jędrzejkiewicz, Hubert Milczarek, Kamil Jankowski
+
+= Studium wykonalności
+
+Cel analizy: Określenie możliwości rozwoju aplikacji pod kątem obsługi ponad 10 000 użytkowników jednocześnie.
+
+== 1. Analiza projektu _battleship_
+
+=== 1.1. Funkcjonalność
+
+==== Uruchomienie aplikacji
+
+* W celu uruchomienia aplikacji należy uprzednio pobrać repozytorium projektu oraz zainstalować aplikację.
+Następnie możemy uruchomić grę w przeglądarce.
+* Główny serwer _backendu_ znajduje się na serwisie chmurowym _Heroku_.
+Po uruchomieniu, jesteśmy w stanie się z nim połączyć.
+
+==== Logowanie i rejestracja
+
+* Aplikacja udostępnia widoki logowania i rejestracji.
+Do zarejestrowania wymagany jest adres e-mail i nazwa użytkownika.
+Nie ma możliwości zarejestrowania dwóch użytkowników o tym samym nicku lub adresie e-mail.
+Nie ma też możliwości trwałego usunięcia gracza.
+* Do gry jest się w stanie zalogować dowolna liczba użytkowników.
+* Po zamknięciu przeglądarki nie następuje automatyczne wylogowanie użytkownika.
+
+==== Widok _home_
+
+* Po zalogowaniu przenoszeni jesteśmy do ekranu _home_.
+Obok danych użytkownika wyświetlane są globalne statystyki rozgrywek gracza.
+Oprócz tego można zobaczyć wszystkich aktywnych użytkowników.
+Po kliknięciu przycisku _Wait for opponent_ jesteśmy oznaczani jako gotowi do gry.]
+Jeżeli którykolwiek z pozostałych graczy naciśnie _join_, rozpoczynamy nową grę i przenoszeni jesteśmy do ekranu ustawiania statków.
+* Lista graczy oczekujących na rozgrywkę nie jest odświeżana automatycznie. Do tego trzeba używać przycisku _refresh_.
+Nie ma też możliwości wysyłania zaproszenia do konkretnego gracza.
+
+==== Widok ustawiania statków
+
+* W widoku ustawiana statków, możemy wybrać opcję rozmieszczenia losowego.
+* W momencie gdy ustawimy statki, musimy poczekać na drugiego gracza.
+* Na ustawienie statków mamy 25 sekund. Jeśli się nie zdążymy w wyznaczonym czasie, zostaniemy przeniesieni do widoku _home_ - kończymy grę.
+* W momencie gdy obaj gracze mają ustawione statki, jesteśmy przenoszeni do planszy rozgrywki.
+
+==== Widok _game_
+
+* Widok _game_ wygląda jak klasyczna plansza do gry w statki.
+Po lewej stronie, wyświetlane są nasze statki, po prawej nasze strzały do statków przeciwnika.
+* Mamy 25 sekund na strzał.
+Jeśli ten czas minie, po oddaniu strzału jesteśmy informowani, że przegraliśmy.
+Przeciwnik jest informowany od razu, o tym że wygrał z powodu spóźnienia drugiego gracza.
+* W momencie gdy zestrzelimy cały statek, pola wokół tego statku są wyłączone z dalszej gry.
+* Jeśli zamkniemy okno przeglądarki ale wrócimy w ciągu 25 sekund od początku naszej kolejki, jesteśmy w stanie kontynuować grę.
+* W momencie zwycięstwa / przegranej wyświetla się przycisk przejścia do widoku _home_.
+* Po skończonej grze następuje aktualizowanie statystyk.
+
+=== 1.2. Opis projektu
+
+==== Wykorzystane technologie
+
+* Projekt jest budowany przy użyciu narzędzi _Maven_ oraz _Docker_.
+* Projekt zbudowany został w oparciu o framework _Spark_.
+* Do obsługi żądań w formacie JSON (serializacji i deserializacji) używany jest pakiet _GSON_.
+* Do wstrzykiwania zalezności użyto framework _guice_.
+* Do utworzenia dokumentacji REST API wykorzystano narzędzie _Swagger_.
+* Testy jednostkowe napisane zostały przy użyciu _TestNG_ oraz _Mockito_.
+* Frontend został zbudowany w oparciu o technologię _Thymeleaf_.
+
+==== Backend - szczegóły
+
+* Wszelkie punkty końcowe zdefiniowane zostały w `BackendServiceEndpoints`.
+* Poszczególne komponenty zgrupowane są w odpowiednich klasach:
+`GameService`, `PlayerService`, `UserSerivce`, `TokeService`.
+Dla każdej klasy została utworzona odpowiadająca klasa `Controller` zawierająca odpowiednie metody do obsługi żądań REST.
+* Kod miejscami nie stosuje się do zasad obiektowej kalisteniki.
+Klasa `Game` zawiera 17 pól.
+Poza tym wiele klas i metod jest publicznych, mimo iż nie są używane poza pakietem.
+* Nie ma dokumentacji _javadoc_ dla publicznych elementów API.
+Utrudnia to rozeznawanie się w kodzie.
+* Całość jest dobrze podzielona na poszczególne kontrolery.
+Nie ma niepotrzebnych zależności pomiędzy klasami poszczególnych komponentów.
+* Jeżeli serwis korzysta z API innego serwisu, robi to poprzez klasę `Service`.
+Klasy `Controller` wykorzystywane są tylko do komunikacji z frontendem.
+* Poszczególne komponenty mogą być łatwo przekształcone na mikrousługi.
+
+== 2. Testowanie aplikacji pod kątem rozszerzenia funkcjonalności
+
+* Pokrycie kodu testami jest na poziomie 31%.
+Przez to wiele ważnych funkcjonalności projektu nie jest przetestowana.
+* W pakiecie `com.epam.javaacademy.battleship.backend.game` testy jednostkowe zostały napisane dla funkcjonalności _Planszy_ i _Współrzędnych_.
+Brak natomiast dokładnych testów dla losowego rozmieszczania statków.
+* Pakiet `com.epam.javaacademy.battleship.backend.user` ma największy stopień pokrycia testami jednostkowymi (ponad 60%).
+
+=== 2.1. Przeprowadzone testy
+
+Aby zbadać możliwości aplikacji przeprowadzono test obciążeniowy. Główny scenariusz został odwzorowany w narzędziu `JMeter`- otwartym projekcie napisanym w 100% w Javie napisany z myślą o testowaniu aplikacji internetowych. Dodatkowo, wykorzystano narzędzie `Selenium`. Przebieg testu został dostosowany tak, aby możliwie jak najdokładniej odwzorowywał realną interakcję użytkownika z programem. W tym celu posłużono się losowymi przerwami czasowymi między kolejnymi krokami testu.
+
+==== Test 0
+
+Pierwszym krokiem przy testowaniu było sprawdzenie, jak aplikacja zareaguje na ciągłe zapytania o rejestracje użytkownika. Test został napisany w `Selenium`, gdzie rejestrowanych było 10 000 użytkowników w jednym wątku. Test nie mógł dojść do końca, ponieważ serwis generował na tyle duże opóźnienia, że program nie mógł poprawnie wykonywać swoich poleceń.
+
+Drugim podejściem był test napisany w czystej Javie z użyciem `OkHttp`. Podobnie jak w poprzednim przypadku, opóźnienia uniemożliwiły przeprowadzanie testu. Podczas wykonywania rzucany był wyjątek:
+----
+java.net.SocketTimeoutException: timeout
+----
+
+Gdy udało się ręcznie osiągnąć liczbę 10 tysięcy użytkowników, strona główna programu wczytywała się ponad 8 sekund.
+
+==== Test 1
+
+Wyniki testu numer 0 wymusiły redukcję użytkowników do liczby 1000. Testy nadal nie były w 100% możliwe, natomiast można było osiągnąć tę liczbę poprzez odpowiednią manipulację czasem odpowiedzi. W tym przypadku został uruchomiony test wykorzystujący `JMeter`.
+
+Scenariusz testowy:
+
+. Logowanie użytkownika.
+. Jeśli wątek ma nieparzystą liczbę: stwórz pokój i czekaj na przeciwnika +
+W przeciwnym przypadku: dołącz do gry.
+. Wygeneruj losową mapę.
+. Strzelaj po kolei do każdej komórki na przemian z przeciwnikiem.
+
+Dużym problemem w teście jest synchronizacja użytkowników. Jeśli kilku użytkowników będzie chciało się podłączyć do jednego pokoju, może się okazać, że tylko jeden z nich dostanie się do środka, a reszta otrzyma w odpowiedzi błędy. Każdy wątek (użytkownik) jest uruchamiany 3 sekundy po poprzednim. Zatem przy 1000 użytkowników, daje to 50 minut na uruchomienie wszystkich wątków. W przeciwnym przypadku serwer odpowiada błędami. Wyniki tego testu przedstawiono w poniższej tabeli.
+
+.Tabela żądań wraz z ich procentową ilością błędów.
+[#img-tabela]
+[caption="Obraz 1: "]
+image::tableOfRequest1000.png[Tabla z danymi]
+
+Z zamieszczonej powyżej tabeli wynika, że procedura `Log in` kończy się sukcesem jedynie w 9%.
+
+.Trzy najczęstsze błędy w w procedurze `Log in`.
+[#img-bledy]
+[caption="Obraz 2: "]
+image::top3ErrorsInLogIn1000.png[Tabela z błędami]
+
+Z kolejnej tabeli można dowiedzieć się, co powodowało tak małą ilość sukcesów. Pomimo tego, że użytkownicy byli zarejestrowani w systemie, odpowiedzi na żądania `Log in` zawierały status `401/Unauthorized`.
+
+.Czas odpowiedzi na żądania.
+[#img-odpowiedzi]
+[caption="Obraz 3: "]
+image::responseTimeOverview.png[Wykres słupkowy czasów odpowiedzi]
+
+Powyższy wykres przedstawia czas odpowiedzi na żądania. Około 40% żądań kończy się błędem.
+
+.Wykres przepływności w czasie.
+[#img-przeplyw]
+[caption="Obraz 4: "]
+image::bytesThroughpytOverTime.png[Wykres przepływności w czasie]
+
+Ostatni wykres obrazuje przepływność. Prędkość wysyłania jest mniejsza niż odbierania, jest również stabilniejsza. Oba wykresy nie wykazują trendu wzrostowego w czasie.
+
+=== 2.2. Wykryte błędy po stronie serwera
+
+W trakcie wykonywania testów zbierano logi z serwera. Zawierają one cenne informacje o możliwych przyczynach opisanych powyżej problemów.
+
+. Przepełniona pamięć.
++
+----
+Process running mem=820M(159.8%)
+Error R14 (Memory quota exceeded)
+
+
+Process running mem=1111M(217.1%)
+Error R15 (Memory quota vastly exceeded)
+----
++
+Dokumentacja _Heroku_ zaznacza, że przekroczenie przydzielonej pamięci powoduje drastyczny spadek w szybkości działania aplikacji.
+
+. Problemy z _Hibernate_
++
+----
+ERROR org.hibernate.AssertionFailure - HHH000099: an assertion failure occurred (this may indicate a bug in Hibernate, but is more likely due to unsafe use of the session): org.hibernate.AssertionFailure: collection was processed twice by flush()
+----
+
+. Brak odpowiedzi na żądanie przez 30 sekund - błęd `Heroku` H12
++
+----
+heroku[router]: at=error code=H12 desc="Request timeout" method=POST path="/game" host=ja-battleship.herokuapp.com request_id=a61e157a-08e6-45fe-99dd-74fabd9804db fwd="89.64.58.173" dyno=web.1 connect=0ms service=30000ms status=503 bytes=0 protocol=http
+----
+Warto tu zaznaczyć, że serwer w tym momencie wyświetla kod błędu 503.
+
+. Zamknięcie połączenia bez odpowiedzi
++
+----
+heroku[router]: at=error code=H13 desc="Connection closed without response" method=POST path="/users" host=ja-battleship.herokuapp.com request_id=4c77aaef-7dfe-47e0-b502-3779a7c7c145 fwd="89.64.58.173" dyno=web.1 connect=1ms service=73ms status=503 bytes=0 protocol=https
+----
+
+. Problemy z wielowątkowością
++
+----
+2021-02-01 ERROR spark.http.matching.GeneralError -
+java.util.ConcurrentModificationException: null
+at java.base/java.util.HashMap.forEach(HashMap.java:1339)
+----
+
+=== 2.3. Podsumowanie
+
+Aby aplikacja była w stanie obsłużyć 10 000 użytkowników należy poprawić:
+
+. Opóźnienia
++
+Darmowa wersja Heroku oferuje ograniczone zasoby, które nie są wystarczające, aby zaspokoić wymagania stawiane w 2021 roku. Moc obliczeniowa oraz przeznaczona pamięć są zbyt małe, aby obsłużyć 10 tysięcy użytkowników. Przejście na płatną wersję _Heroku_ lub zakup odpowiedniego sprzętu pozwoli na przyspieszenie aplikacji.
++
+. Optymalizacja aplikacji pod kątem wielowątkowości.
++
+Zanim aplikacja trafi na produkcję, musi zostać wyeliminowany problem z wielowątkowością objawiający się wyjątkiem `ConcurrentModificationException`.
+
+. Poprawienie błędu związanego z _Hibernatem_.
++
+Błąd `HHH000099: an assertion failure occurred`
+
+== 3. Wyniki przeprowadzonej analizy
+
+=== 3.1. Wykonywalność
+
+Przeprowadzona analiza wykazała możliwość obsłużenia maksymalnie 1000 użytkowników jednocześnie. Nie spełnia to założonego celu rozszerzenia aplikacji do obsługi ponad 10 000 użytkowników. Dodatkowe analizy wykazały wzrost czasu oczekiwania na odpowiedź serwera już przy więcej niż 14 żądaniach na sekundę.
+
+=== 3.2. Złożoność modyfikacji wymaganych do spełnienia założeń projektu
+
+==== Serwer
+
+. Uruchomienie na innym serwerze zdolnym obsłużyć większą ilość użytkowników **[24h]**:
++
+* wyszukanie serwisu
+* wybór serwisu
+* test nowego serwisu
+
+==== Baza danych
+
+. Wyodrębnienie bazy danych na osobny serwer (żeby uniknąć resetowania danych) **[18h]**:
++
+Przy każdym resecie aplikacji dochodzi do resetowania bazy danych. W celu poprawy bezpieczeństwa, dane powinny być przechowywane w innym miejscu, tak by uniknąć zależności: reset backendu => utrata danych w bazie.
++
+* testy
+* zabezpieczenia dla bazy danych (uwierzytelnianie, ...)
+
+==== Aplikacja
+
+. Wyodrębnienie części klienckiej aplikacji **[48h]**:
++
+Wyodrębnienie samej części klienckiej odchudzi aplikację. Dodatkowo poprawi enkapsulację - ukrywamy szczegóły implementacji backendu przed użytkownikiem (nie będziemy go do niego wysyłać).
+Część frontendowa wymaga optymalizacji (pobieranie dużej liczby użytkowników (>1000) jest kosztowne czasowo).
++
+* Pierwszy krok przed przystąpieniem do zmian to poprawa pokrycia testami [30h]
+* Wyodrębnienie komponentów aplikacji [18h]
+
+. Testy _od-deski-do-deski_ dla zmodyfikowanej aplikacji **[42h]**
++
+Co się składa na testy całościowe?
++
+* zautomatyzowane testy REST API (z wykorzystaniem np.: JMeter, Postman)
+* zautomatyzowane testy "klikania" aplikacji (Selenium)
++
+Przybliżony czas realizacji zadań testowych:
++
+* wdrożenie nowego narzędzia: Selenium [6h]
+* wdrożenie nowego narzędzia: JMeter [6h]
+* zapewnienie odpowiedniego pokrycia testami (60%) [30h]
+
+=== 3.3. Wnioski
+
+. Aplikacja w obecnej wersji nie jest w stanie obsłużyć więcej niż 1000 użytkowników.
+
+. Architektura aplikacji utrudnia jej skalowanie - zalecana przebudowa architektury.
+
+. Przeprowadzona analiza wykazuje zapotrzebowanie na 132 roboczo-godziny na potrzeby zrealizowania zleconego zadania.
++
+.. Zadania obejmują:
+- wyodrębnienie bazy danych
+- wyodrębnienie części klienckiej aplikacji
+- przeniesienie aplikacji na serwer zdolny obsłużyć wymaganą ilość użytkowników
+- utworzenie testów jednostkowych oraz całościowych
+
+___
