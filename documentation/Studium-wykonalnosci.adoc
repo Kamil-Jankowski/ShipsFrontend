@@ -9,6 +9,9 @@ Cel analizy: Określenie możliwości rozwoju aplikacji pod kątem obsługi pona
 
 == 1. Analiza projektu _battleship_
 
+Repozytorium projektu: https://git.epam.com/pawel_czarny/battleship
+Backend na _Heroku_: https://ja-battleship.herokuapp.com/
+
 === 1.1. Funkcjonalność
 
 ==== Uruchomienie aplikacji
@@ -16,7 +19,9 @@ Cel analizy: Określenie możliwości rozwoju aplikacji pod kątem obsługi pona
 * W celu uruchomienia aplikacji należy uprzednio pobrać repozytorium projektu oraz zainstalować aplikację.
 Następnie możemy uruchomić grę w przeglądarce.
 * Główny serwer _backendu_ znajduje się na serwisie chmurowym _Heroku_.
-Po uruchomieniu, jesteśmy w stanie się z nim połączyć.
+Po uruchomieniu, jesteśmy w stanie się z nim połączyć. Należy pamiętać o czasie potrzebnym do uruchomienia serwisu.
+
+Szczegółowa instrukcja uruchomienia aplikacji znajduje się w pliku _readme.adoc_.
 
 ==== Logowanie i rejestracja
 
@@ -32,7 +37,7 @@ Nie ma też możliwości trwałego usunięcia gracza.
 * Po zalogowaniu przenoszeni jesteśmy do ekranu _home_.
 Obok danych użytkownika wyświetlane są globalne statystyki rozgrywek gracza.
 Oprócz tego można zobaczyć wszystkich aktywnych użytkowników.
-Po kliknięciu przycisku _Wait for opponent_ jesteśmy oznaczani jako gotowi do gry.]
+Po kliknięciu przycisku _Wait for opponent_ jesteśmy oznaczani jako gotowi do gry.
 Jeżeli którykolwiek z pozostałych graczy naciśnie _join_, rozpoczynamy nową grę i przenoszeni jesteśmy do ekranu ustawiania statków.
 * Lista graczy oczekujących na rozgrywkę nie jest odświeżana automatycznie. Do tego trzeba używać przycisku _refresh_.
 Nie ma też możliwości wysyłania zaproszenia do konkretnego gracza.
@@ -63,7 +68,7 @@ Przeciwnik jest informowany od razu, o tym że wygrał z powodu spóźnienia dru
 * Projekt jest budowany przy użyciu narzędzi _Maven_ oraz _Docker_.
 * Projekt zbudowany został w oparciu o framework _Spark_.
 * Do obsługi żądań w formacie JSON (serializacji i deserializacji) używany jest pakiet _GSON_.
-* Do wstrzykiwania zalezności użyto framework _guice_.
+* Do wstrzykiwania zalezności użyto framework _Guice_.
 * Do utworzenia dokumentacji REST API wykorzystano narzędzie _Swagger_.
 * Testy jednostkowe napisane zostały przy użyciu _TestNG_ oraz _Mockito_.
 * Frontend został zbudowany w oparciu o technologię _Thymeleaf_.
@@ -72,7 +77,7 @@ Przeciwnik jest informowany od razu, o tym że wygrał z powodu spóźnienia dru
 
 * Wszelkie punkty końcowe zdefiniowane zostały w `BackendServiceEndpoints`.
 * Poszczególne komponenty zgrupowane są w odpowiednich klasach:
-`GameService`, `PlayerService`, `UserSerivce`, `TokeService`.
+`GameService`, `PlayerService`, `UserSerivce`, `TokenService`.
 Dla każdej klasy została utworzona odpowiadająca klasa `Controller` zawierająca odpowiednie metody do obsługi żądań REST.
 * Kod miejscami nie stosuje się do zasad obiektowej kalisteniki.
 Klasa `Game` zawiera 17 pól.
@@ -214,7 +219,7 @@ Błąd `HHH000099: an assertion failure occurred`
 
 === 3.1. Wykonywalność
 
-Przeprowadzona analiza wykazała możliwość obsłużenia maksymalnie 1000 użytkowników jednocześnie. Nie spełnia to założonego celu rozszerzenia aplikacji do obsługi ponad 10 000 użytkowników. Dodatkowe analizy wykazały wzrost czasu oczekiwania na odpowiedź serwera już przy więcej niż 14 żądaniach na sekundę.
+Analiza została przeprowadzona dla 1000 użytkowników. Jest to maksymalna stabilna ilość użytkowników pozwalająca na utrzymanie odpowiedzi ze strony aplikacji, choć i tutaj aplikacja traciła stabilność. Nie spełnia to założonego celu rozszerzenia aplikacji do obsługi ponad 10 000 użytkowników. Dodatkowe analizy wykazały wzrost czasu oczekiwania na odpowiedź serwera już przy więcej niż 14 żądaniach na sekundę.
 
 === 3.2. Złożoność modyfikacji wymaganych do spełnienia założeń projektu
 
@@ -271,5 +276,8 @@ Przybliżony czas realizacji zadań testowych:
 - wyodrębnienie części klienckiej aplikacji
 - przeniesienie aplikacji na serwer zdolny obsłużyć wymaganą ilość użytkowników
 - utworzenie testów jednostkowych oraz całościowych
+- restrukturyzację kodu w celu poprawy jego obiektowości
+- poprawę enkapsulacji
+- utworzenie dokumentacji _javadoc_
 
 ___
